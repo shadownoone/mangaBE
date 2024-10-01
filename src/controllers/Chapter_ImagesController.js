@@ -1,10 +1,10 @@
-const Chapter_ImagesService = require("../services/chapter_ImagesService");
-const db = require("~/models");
-const BaseController = require("./BaseController");
+const Chapter_ImagesService = require('../services/chapter_ImagesService');
+const db = require('~/models');
+const BaseController = require('./BaseController');
 
 class Chapter_ImagesController extends BaseController {
     constructor() {
-        super("Chapter_Images");
+        super('chapter_Images');
     }
 
     // GET API
@@ -17,8 +17,8 @@ class Chapter_ImagesController extends BaseController {
                 pageSize: pageSize,
                 include: {
                     model: db.Chapter,
-                    as: "chapter",
-                    attributes: ["chapter_id", "title"],
+                    as: 'chapter',
+                    attributes: ['chapter_id', 'title'],
                 },
                 raw: false, // raw: false để có thể lấy đối tượng liên quan (chapter)
             });
