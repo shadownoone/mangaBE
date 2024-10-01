@@ -1,0 +1,136 @@
+.content-wrapper {
+    width: 100%;
+    padding: 16px 30px;
+    background: #f5f7ff;
+
+    .title {
+        font-size: 2.4rem;
+    }
+
+    .subtitle {
+        font-size: 1.6rem;
+    }
+
+    .dropdown-toggle {
+        font-size: 1.4rem;
+        border-radius: 16px;
+        padding: 8px 12px;
+    }
+}
+
+.grid-margin {
+    margin-bottom: 26px;
+}
+
+.stretch-card {
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+
+    .card.tale-bg {
+        background: #dae7ff;
+    }
+}
+
+.card.card-tale {
+    background: #7da0fa;
+    color: #ffffff;
+}
+
+.card.card-dark-blue {
+    background: #4747a1;
+    color: #ffffff;
+}
+
+.card.card-light-blue {
+    background: #7978e9;
+    color: #ffffff;
+}
+
+.card.card-light-danger {
+    background: #f3797e;
+    color: #ffffff;
+}
+
+.stretch-card > .card {
+    width: 100%;
+    min-width: 100%;
+}
+
+.card-people {
+    position: relative;
+    padding-top: 20px;
+}
+
+.card-people img {
+    width: 100%;
+}
+
+.card-people .weather-info {
+    position: absolute;
+    top: 0;
+    right: 40px;
+
+    h2 {
+        font-size: 5rem;
+    }
+}
+
+.card-people .weather-info sup {
+    font-size: 2.4rem;
+}
+
+.card-people .weather-info .location {
+    font-size: 2rem;
+    margin-bottom: 0;
+
+    & + h6 {
+        font-size: 1.6rem;
+    }
+}
+
+.card .card-body {
+    padding: 20px;
+}
+
+.card-header {
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-create {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-size: 2.4rem;
+    line-height: 2.4rem;
+    border: 0;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.card .card-title {
+    color: #010101;
+    margin-bottom: 20px;
+    text-transform: capitalize;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.card {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.card-body {
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1.25rem;
+}
+
+.fs-30 {
+    font-size: 3rem;
+}

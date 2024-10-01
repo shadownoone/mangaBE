@@ -1,0 +1,21 @@
+.modal {
+    top: 0;
+}
+
+.modal-content {
+    border-radius: 12px;
+    padding: 8px;
+    border: 0;
+}
+
+.modal-title {
+    font-size: 1.6rem;
+}
+
+.modal-header .close {
+    padding: 10px;
+
+    span {
+        font-size: 2rem;
+    }
+}
