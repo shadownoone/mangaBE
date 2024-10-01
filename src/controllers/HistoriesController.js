@@ -1,10 +1,10 @@
-const historiesService = require("../services/historiesService");
-const db = require("~/models");
-const BaseController = require("./BaseController");
+const historiesService = require('../services/historiesService');
+const db = require('~/models');
+const BaseController = require('./BaseController');
 
 class HistoriesController extends BaseController {
     constructor() {
-        super("Histories");
+        super('histories');
     }
 
     // GET API
@@ -18,18 +18,18 @@ class HistoriesController extends BaseController {
                 include: [
                     {
                         model: db.User,
-                        as: "user",
-                        attributes: ["username"],
+                        as: 'user',
+                        attributes: ['username'],
                     },
                     {
                         model: db.Manga,
-                        as: "manga",
-                        attributes: ["title"],
+                        as: 'manga',
+                        attributes: ['title'],
                     },
                     {
                         model: db.Chapter,
-                        as: "chapter",
-                        attributes: ["title"],
+                        as: 'chapter',
+                        attributes: ['title'],
                     },
                 ],
                 raw: false,

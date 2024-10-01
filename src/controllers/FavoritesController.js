@@ -4,7 +4,7 @@ const BaseController = require('./BaseController');
 
 class FavoritesController extends BaseController {
     constructor() {
-        super('Favorites');
+        super('favorites');
     }
 
     // GET API

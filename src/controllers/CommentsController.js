@@ -1,10 +1,10 @@
-const commentsService = require("../services/commentsService");
-const db = require("~/models");
-const BaseController = require("./BaseController");
+const commentsService = require('../services/commentsService');
+const db = require('~/models');
+const BaseController = require('./BaseController');
 
 class CommentsController extends BaseController {
     constructor() {
-        super("Comments");
+        super('comments');
     }
 
     // GET API
@@ -18,18 +18,18 @@ class CommentsController extends BaseController {
                 include: [
                     {
                         model: db.User,
-                        as: "user",
-                        attributes: ["username"],
+                        as: 'user',
+                        attributes: ['username'],
                     },
                     {
                         model: db.Manga,
-                        as: "manga",
-                        attributes: ["title"],
+                        as: 'manga',
+                        attributes: ['title'],
                     },
                     {
                         model: db.Chapter,
-                        as: "chapter",
-                        attributes: ["title"],
+                        as: 'chapter',
+                        attributes: ['title'],
                     },
                 ],
                 raw: false,

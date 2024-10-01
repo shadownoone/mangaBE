@@ -1,9 +1,9 @@
-const ratingService = require("../services/ratingsService");
-const BaseController = require("./BaseController");
+const ratingService = require('../services/ratingsService');
+const BaseController = require('./BaseController');
 
 class RatingController extends BaseController {
     constructor() {
-        super("Ratings");
+        super('ratings');
     }
 }
 
