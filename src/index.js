@@ -16,7 +16,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const http = require('http');
 const { Server } = require('socket.io');
-const passportStrategy = require('../passport'); // Import cấu hình passport
+const passportStrategy = require('~/controllers/passport'); // Import cấu hình passport
 
 const routes = require('./routes');
 const { sequelize, connect } = require('./config/connection');
