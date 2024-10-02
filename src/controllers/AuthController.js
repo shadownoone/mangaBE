@@ -1,41 +1,62 @@
 const Joi = require('joi');
 const authService = require('~/services/authService');
 const userService = require('~/services/userService');
+const passport = require('passport');
 
 class AuthController {
-    login = async (req, res) => {
-        const schema = Joi.object({
-            email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-            password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
-        });
-        const { error, value } = schema.validate({ ...req.body });
-        if (error) {
-            return res.status(200).json({
-                code: 1,
-                message: error.details[0].message,
+    //     login = async (req, res) => {
+    //         const schema = Joi.object({
+    //             email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+    //             password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+    //         });
+    //         const { error, value } = schema.validate({ ...req.body });
+    //         if (error) {
+    //             return res.status(200).json({
+    //                 code: 1,
+    //                 message: error.details[0].message,
+    //             });
+    //         }
+    //         const data = await authService.handleLogin(value);
+    //
+    //         await authService.updateUserCode(data.data.email, data.data.refreshToken);
+    //
+    //         if (data.code === -1) {
+    //             return res.status(500).json(data);
+    //         }
+    //
+    //         //set cookie
+    //         if (data) {
+    //             res.cookie('accessToken', data.data.accessToken, {
+    //                 httpOnly: true,
+    //                 maxAge: process.env.MAX_AGE_ACCESS_TOKEN,
+    //             });
+    //             res.cookie('refreshToken', data.data.refreshToken, {
+    //                 httpOnly: true,
+    //                 maxAge: process.env.MAX_AGE_REFRESH_TOKEN,
+    //             });
+    //         }
+    //
+    //         res.status(200).json(data);
+    //     };
+
+    login = (req, res, next) => {
+        passport.authenticate('local', (err, user, info) => {
+            if (err) {
+                return res.status(500).json(err);
+            }
+
+            if (!user) {
+                return res.status(500).json({ message: 'Password is incorrect' });
+            }
+
+            req.login(user, (err) => {
+                if (err) {
+                    return next(err);
+                }
+
+                return res.json({ user });
             });
-        }
-        const data = await authService.handleLogin(value);
-
-        await authService.updateUserCode(data.data.email, data.data.refreshToken);
-
-        if (data.code === -1) {
-            return res.status(500).json(data);
-        }
-
-        //set cookie
-        if (data) {
-            res.cookie('accessToken', data.data.accessToken, {
-                httpOnly: true,
-                maxAge: process.env.MAX_AGE_ACCESS_TOKEN,
-            });
-            res.cookie('refreshToken', data.data.refreshToken, {
-                httpOnly: true,
-                maxAge: process.env.MAX_AGE_REFRESH_TOKEN,
-            });
-        }
-
-        res.status(200).json(data);
+        })(req, res, next);
     };
 
     logout = async (req, res) => {

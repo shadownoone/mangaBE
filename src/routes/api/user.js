@@ -15,8 +15,8 @@ router.get('/favorites', authenticateUser, userController.getFavoriteManga);
 // [POST] /users
 router.post('/', userController.create);
 
-// [PUT] /users/:id
-router.put('/:id', userController.update);
+// [PUT] /users
+router.put('/update', authenticateUser, userController.update);
 
 // [DELETE] /users/:id
 router.delete('/:id', userController.delete);

@@ -1,7 +1,7 @@
-const bcrypt = require("bcryptjs");
-const { v4: uuidv4 } = require("uuid");
-const db = require("~/models");
-const jwtService = require("./jwtService");
+const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
+const db = require('~/models');
+const jwtService = require('./jwtService');
 const salt = bcrypt.genSaltSync(10);
 
 const handleRegister = async (data) => {
@@ -10,7 +10,7 @@ const handleRegister = async (data) => {
         if (isEmailExist) {
             return {
                 code: 1,
-                message: "Email is already exist!",
+                message: 'Email is already exist!',
             };
         }
 
@@ -18,7 +18,7 @@ const handleRegister = async (data) => {
         if (isUsernameExist) {
             return {
                 code: 1,
-                message: "Username is already exist!",
+                message: 'Username is already exist!',
             };
         }
 
@@ -28,19 +28,19 @@ const handleRegister = async (data) => {
             email: data.email,
             username: data.username,
             password: hashPassword,
-            fullName: data.username,
-            role: "user",
+            avatar: data.avatar,
+            role: '0',
         });
 
         return {
-            code: "0",
-            message: "A user is created successfully!",
+            code: '0',
+            message: 'A user is created successfully!',
         };
     } catch (error) {
         console.log(error);
         return {
             code: -1,
-            message: "Something wrong in service...",
+            message: 'Something wrong in service...',
         };
     }
 };
@@ -50,9 +50,8 @@ const handleLogin = async (data) => {
         const user = await db.User.findOne({
             where: {
                 email: data.email,
-                type: "LOCAL",
             },
-            attributes: { exclude: ["type", "code", "createdAt", "updatedAt"] },
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
             raw: true,
         });
 
@@ -62,7 +61,7 @@ const handleLogin = async (data) => {
             if (isCorrectPassword) {
                 return {
                     code: 0,
-                    message: "ok",
+                    message: 'ok',
                     data: {
                         accessToken: jwtService.generateToken({
                             id: user.id,
@@ -80,14 +79,14 @@ const handleLogin = async (data) => {
 
         return {
             code: 1,
-            message: "Your email/phone number or password is incorrect!",
-            data: "",
+            message: 'Your email/phone number or password is incorrect!',
+            data: '',
         };
     } catch (error) {
         console.log(error);
         return {
             code: -1,
-            message: "Something wrong in service...",
+            message: 'Something wrong in service...',
         };
     }
 };
@@ -126,14 +125,14 @@ const updateUserCode = async (email, code) => {
             where: {
                 email,
             },
-        }
+        },
     );
     return !!user;
 };
 
 const handleRefreshToken = async (token) => {
-    let newAccessToken = "";
-    let newRefreshToken = "";
+    let newAccessToken = '';
+    let newRefreshToken = '';
 
     const user = await db.User.findOne({
         where: {

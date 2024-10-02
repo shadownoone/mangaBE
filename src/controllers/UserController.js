@@ -122,6 +122,29 @@ class UserController extends BaseController {
 
         res.json(data);
     };
+
+    // [PUT] /users
+    update = async (req, res) => {
+        const userId = req.user.user_id; // Lấy userId từ token hoặc session
+        const updateData = { ...req.body }; // Dữ liệu cần cập nhật
+
+        try {
+            // Gọi hàm update từ service với đúng cấu trúc
+            const result = await userService.update({
+                where: { user_id: userId }, // Điều kiện where để tìm user theo userId
+                data: updateData, // Dữ liệu cần cập nhật
+            });
+
+            if (result.code === -1) {
+                return res.status(500).json(result); // Lỗi server
+            }
+
+            res.json(result); // Trả về dữ liệu đã cập nhật thành công
+        } catch (error) {
+            console.error('Error updating user:', error);
+            res.status(500).json({ message: 'Failed to update user.' });
+        }
+    };
 }
 
 module.exports = new UserController();

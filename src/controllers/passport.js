@@ -1,11 +1,14 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-const FacebookStrategy = require('passport-facebook').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
+
+// const FacebookStrategy = require('passport-facebook').Strategy;
 
 const passport = require('passport');
 const jwtService = require('~/services/jwtService');
 
 const db = require('~/models');
+const authService = require('~/services/authService');
 
 //Google
 passport.use(
@@ -63,6 +66,20 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
     done(null, user);
 });
+
+//Local
+
+passport.use(
+    new LocalStrategy(async function (email, password, done) {
+        const res = await authService.handleLogin({ email: email, password: password });
+
+        // if (!res) {
+        //     return done(null, false);
+        // }
+
+        return done(null, res);
+    }),
+);
 
 // Facebook
 // passport.use(
