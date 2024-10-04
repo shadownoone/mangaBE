@@ -112,7 +112,7 @@ class UserController extends BaseController {
     };
 
     // API
-    // [POST] /users
+    // [POST] /users/create
     create = async (req, res) => {
         const data = await userService.create({ ...req.body, password: userService.hashPassword(req.body.password) });
 

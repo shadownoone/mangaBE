@@ -90,7 +90,7 @@ const methodsService = (Model) => {
                 if (isCreated) {
                     return {
                         code: 0,
-                        message: 'ok',
+                        // message: 'ok',
                         data: data,
                     };
                 } else {

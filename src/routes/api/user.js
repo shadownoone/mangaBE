@@ -13,7 +13,7 @@ router.get('/last-read', authenticateUser, userController.getLastReadMangaAndCha
 router.get('/favorites', authenticateUser, userController.getFavoriteManga);
 
 // [POST] /users
-router.post('/', userController.create);
+router.post('/create', userController.create);
 
 // [PUT] /users
 router.put('/update', authenticateUser, userController.update);
