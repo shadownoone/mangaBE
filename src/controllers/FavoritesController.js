@@ -66,7 +66,7 @@ class FavoritesController extends BaseController {
             });
 
             return res.status(201).json({
-                message: 'Added to favorites successfully!',
+                message: 'Thêm truyện vào danh sách yêu thích thành công!',
                 favorite: newFavorite,
             });
         } catch (error) {

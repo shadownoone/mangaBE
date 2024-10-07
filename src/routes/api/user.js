@@ -8,8 +8,10 @@ const { authenticateUser } = require('~/middlewares/authMiddleware');
 // [GET] /users
 router.get('/all', userController.get);
 
+//
 router.get('/last-read', authenticateUser, userController.getLastReadMangaAndChapter);
 
+//
 router.get('/favorites', authenticateUser, userController.getFavoriteManga);
 
 // [POST] /users

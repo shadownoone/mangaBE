@@ -117,6 +117,7 @@ const methodsService = (Model) => {
                         where: {
                             ...where,
                         },
+
                         ...payload,
                     },
                 );
