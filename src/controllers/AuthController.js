@@ -1,44 +1,12 @@
 const Joi = require('joi');
 const authService = require('~/services/authService');
 const userService = require('~/services/userService');
+const jwtService = require('~/services/jwtService');
+
 const passport = require('passport');
+const { v4: uuidv4 } = require('uuid');
 
 class AuthController {
-    //     login = async (req, res) => {
-    //         const schema = Joi.object({
-    //             email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-    //             password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
-    //         });
-    //         const { error, value } = schema.validate({ ...req.body });
-    //         if (error) {
-    //             return res.status(200).json({
-    //                 code: 1,
-    //                 message: error.details[0].message,
-    //             });
-    //         }
-    //         const data = await authService.handleLogin(value);
-    //
-    //         await authService.updateUserCode(data.data.email, data.data.refreshToken);
-    //
-    //         if (data.code === -1) {
-    //             return res.status(500).json(data);
-    //         }
-    //
-    //         //set cookie
-    //         if (data) {
-    //             res.cookie('accessToken', data.data.accessToken, {
-    //                 httpOnly: true,
-    //                 maxAge: process.env.MAX_AGE_ACCESS_TOKEN,
-    //             });
-    //             res.cookie('refreshToken', data.data.refreshToken, {
-    //                 httpOnly: true,
-    //                 maxAge: process.env.MAX_AGE_REFRESH_TOKEN,
-    //             });
-    //         }
-    //
-    //         res.status(200).json(data);
-    //     };
-
     login = (req, res, next) => {
         passport.authenticate('local', (err, user, info) => {
             if (err) {
@@ -53,6 +21,23 @@ class AuthController {
                 if (err) {
                     return next(err);
                 }
+
+                // Đặt Access Token vào cookie
+                res.cookie('accessToken', user.data.accessToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'Strict',
+
+                    maxAge: 15 * 60 * 1000,
+                });
+
+                // Đặt Refresh Token vào cookie
+                res.cookie('refreshToken', user.data.refreshToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'Strict',
+                    maxAge: 7 * 24 * 60 * 60 * 1000,
+                });
 
                 return res.json({ user });
             });

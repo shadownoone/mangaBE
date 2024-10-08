@@ -46,7 +46,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(morgan('dev'));
 app.use(cookieParser());
-app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:5173'], credentials: true }));
+app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:5174'], credentials: true }));
 
 app.use(
     session({
