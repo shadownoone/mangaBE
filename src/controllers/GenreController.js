@@ -1,10 +1,10 @@
-const genreService = require("../services/genreService");
-const db = require("~/models");
-const BaseController = require("./BaseController");
+const genreService = require('../services/genreService');
+const db = require('~/models');
+const BaseController = require('./BaseController');
 
 class GenreController extends BaseController {
     constructor() {
-        super("genre");
+        super('genre');
     }
 
     // GET API
@@ -15,12 +15,6 @@ class GenreController extends BaseController {
             const data = await genreService.find({
                 page: page,
                 pageSize: pageSize,
-                include: [
-                    {
-                        model: db.Manga,
-                        as: "mangas",
-                    },
-                ],
 
                 raw: false,
             });
@@ -45,7 +39,7 @@ class GenreController extends BaseController {
             });
 
             if (!genre) {
-                return res.status(404).json({ message: "Thể loại không tồn tại" });
+                return res.status(404).json({ message: 'Thể loại không tồn tại' });
             }
 
             // Tìm các truyện thuộc thể loại này cùng với chương mới nhất của từng truyện
@@ -53,18 +47,27 @@ class GenreController extends BaseController {
                 include: [
                     {
                         model: db.Genre,
-                        as: "genres", // Alias của mô hình Genre
+                        as: 'genres', // Alias của mô hình Genre
                         where: { genre_id: genre.genre_id },
                         through: { attributes: [] }, // Bỏ qua các thuộc tính từ bảng liên kết
                     },
                     {
                         model: db.Chapter,
-                        as: "chapters", // Alias của mô hình Chapter
+                        as: 'chapters', // Alias của mô hình Chapter
                         limit: 1, // Lấy một chương
-                        order: [["chapter_number", "DESC"]],
+                        order: [['chapter_number', 'DESC']],
                     },
                 ],
-                attributes: ["manga_id", "title", "description", "author", "views", "cover_image"],
+                attributes: [
+                    'manga_id',
+                    'title',
+                    'description',
+                    'author',
+                    'views',
+                    'cover_image',
+                    'createdAt',
+                    'updatedAt',
+                ],
                 raw: false,
             });
 
@@ -76,7 +79,7 @@ class GenreController extends BaseController {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                message: "Lỗi khi lấy truyện theo thể loại",
+                message: 'Lỗi khi lấy truyện theo thể loại',
                 error: error.message,
             });
         }

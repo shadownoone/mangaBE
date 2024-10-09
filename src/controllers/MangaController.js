@@ -72,37 +72,51 @@ class MangaController extends BaseController {
         }
     };
 
-    // GET /top API
-    // getTopMangas = async (req, res) => {
-    //     const page = req.query.page || 1;
-    //     const pageSize = req.query.pageSize || 20;
-
-    //     try {
-    //         // Lấy danh sách top manga, sắp xếp theo lượt xem (views) giảm dần
-    //         const data = await mangaService.find({
-    //             page: page,
-    //             pageSize: pageSize,
-    //             order: [["views", "DESC"]],
-    //             raw: true,
-    //         });
-
-    //         // Kiểm tra nếu không có dữ liệu trả về
-    //         if (!data || data.code === -1) {
-    //             return res
-    //                 .status(500)
-    //                 .json({ code: -1, message: "Không có dữ liệu manga hàng đầu" });
+    // GET /id API
+    //     getMangaById = async (req, res) => {
+    //         try {
+    //             const id = req.params.id;
+    //
+    //             const data = await mangaService.find({
+    //                 findOne: true,
+    //                 where: {
+    //                     manga_id: id,
+    //                 },
+    //                 include: [
+    //                     {
+    //                         model: db.Chapter,
+    //                         as: 'chapters',
+    //                     },
+    //                     {
+    //                         model: db.Genre,
+    //                         as: 'genres',
+    //                         attributes: ['name'],
+    //                         through: {
+    //                             attributes: [],
+    //                         },
+    //                     },
+    //
+    //                     {
+    //                         model: db.Ratings,
+    //                         as: 'ratings',
+    //                     },
+    //                 ],
+    //                 raw: false,
+    //             });
+    //
+    //             if (!data) {
+    //                 return res.status(404).json({ message: 'Manga not found' });
+    //             }
+    //
+    //             return res.status(200).json(data);
+    //         } catch (error) {
+    //             console.error('Error in getMangaById:', error); // Log toàn bộ lỗi
+    //             return res.status(500).json({
+    //                 message: 'Internal server error',
+    //                 error: error.message, // Trả lại lỗi chi tiết hơn
+    //             });
     //         }
-
-    //         // Trả về dữ liệu manga top
-    //         return res
-    //             .status(200)
-    //             .json({ code: 0, message: "Lấy danh sách manga hàng đầu thành công", data });
-    //     } catch (error) {
-    //         // Xử lý lỗi và trả về phản hồi lỗi
-    //         console.error("Lỗi khi lấy danh sách manga hàng đầu:", error);
-    //         return res.status(500).json({ code: -1, message: error.message });
-    //     }
-    // };
+    //     };
 
     //GET /slug
 

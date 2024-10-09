@@ -1,5 +1,5 @@
-"use strict";
-const { Model } = require("sequelize");
+'use strict';
+const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
     class Comments extends Model {
@@ -11,24 +11,24 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // Define association here
             Comments.belongsTo(models.User, {
-                foreignKey: "user_id",
-                as: "user",
-                onDelete: "CASCADE",
-                onUpdate: "CASCADE",
+                foreignKey: 'user_id',
+                as: 'user',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
             });
 
             Comments.belongsTo(models.Manga, {
-                foreignKey: "manga_id",
-                as: "manga",
-                onDelete: "CASCADE",
-                onUpdate: "CASCADE",
+                foreignKey: 'manga_id',
+                as: 'manga',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
             });
 
             Comments.belongsTo(models.Chapter, {
-                foreignKey: "chapter_id",
-                as: "chapter",
-                onDelete: "CASCADE",
-                onUpdate: "CASCADE",
+                foreignKey: 'chapter_id',
+                as: 'chapter',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
             });
         }
     }
@@ -45,24 +45,24 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: "Users",
-                    key: "user_id",
+                    model: 'Users',
+                    key: 'user_id',
                 },
             },
             manga_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: "Mangas",
-                    key: "manga_id",
+                    model: 'Mangas',
+                    key: 'manga_id',
                 },
             },
             chapter_id: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
+
                 references: {
-                    model: "Chapters",
-                    key: "chapter_id",
+                    model: 'Chapters',
+                    key: 'chapter_id',
                 },
             },
             content: {
@@ -72,9 +72,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             sequelize,
-            modelName: "Comments",
+            modelName: 'Comments',
             underscored: true,
-        }
+        },
     );
 
     return Comments;
