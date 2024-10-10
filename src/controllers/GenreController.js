@@ -64,6 +64,7 @@ class GenreController extends BaseController {
                     'description',
                     'author',
                     'views',
+                    'slug',
                     'cover_image',
                     'createdAt',
                     'updatedAt',

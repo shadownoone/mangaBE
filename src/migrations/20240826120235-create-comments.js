@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface
-            .createTable("Comments", {
+            .createTable('Comments', {
                 comment_id: {
                     allowNull: false,
                     autoIncrement: true,
@@ -20,7 +20,7 @@ module.exports = {
                 },
                 chapter_id: {
                     type: Sequelize.INTEGER,
-                    allowNull: false,
+                    allowNull: true,
                 },
                 content: {
                     type: Sequelize.TEXT,
@@ -37,48 +37,36 @@ module.exports = {
                     defaultValue: Sequelize.NOW,
                 },
             })
+
             .then(() => {
-                return queryInterface.addConstraint("Comments", {
-                    fields: ["user_id"],
-                    type: "foreign key",
-                    name: "comments_user_id_fk",
+                return queryInterface.addConstraint('Comments', {
+                    fields: ['manga_id'],
+                    type: 'foreign key',
+                    name: 'comments_manga_id_fk',
                     references: {
-                        table: "Users",
-                        field: "user_id",
+                        table: 'Mangas',
+                        field: 'manga_id',
                     },
-                    onDelete: "CASCADE",
-                    onUpdate: "CASCADE",
+                    onDelete: 'CASCADE',
+                    onUpdate: 'CASCADE',
                 });
             })
             .then(() => {
-                return queryInterface.addConstraint("Comments", {
-                    fields: ["manga_id"],
-                    type: "foreign key",
-                    name: "comments_manga_id_fk",
+                return queryInterface.addConstraint('Comments', {
+                    fields: ['chapter_id'],
+                    type: 'foreign key',
+                    name: 'comments_chapter_id_fk',
                     references: {
-                        table: "Mangas",
-                        field: "manga_id",
+                        table: 'Chapters',
+                        field: 'chapter_id',
                     },
-                    onDelete: "CASCADE",
-                    onUpdate: "CASCADE",
-                });
-            })
-            .then(() => {
-                return queryInterface.addConstraint("Comments", {
-                    fields: ["chapter_id"],
-                    type: "foreign key",
-                    name: "comments_chapter_id_fk",
-                    references: {
-                        table: "Chapters",
-                        field: "chapter_id",
-                    },
-                    onDelete: "CASCADE",
-                    onUpdate: "CASCADE",
+                    onDelete: 'CASCADE',
+                    onUpdate: 'CASCADE',
                 });
             });
     },
 
     down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable("Comments");
+        return queryInterface.dropTable('Comments');
     },
 };

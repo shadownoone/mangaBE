@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface
-            .createTable("Chapter_Images", {
+            .createTable('Chapter_Images', {
                 image_id: {
                     allowNull: false,
                     autoIncrement: true,
@@ -20,7 +20,7 @@ module.exports = {
                 },
                 image_order: {
                     type: Sequelize.INTEGER,
-                    allowNull: false,
+                    allowNull: true,
                 },
                 createdAt: {
                     allowNull: false,
@@ -34,21 +34,21 @@ module.exports = {
                 },
             })
             .then(() => {
-                return queryInterface.addConstraint("Chapter_Images", {
-                    fields: ["chapter_id"],
-                    type: "foreign key",
-                    name: "chapter_images_chapter_id_fk", // Tên của ràng buộc khóa ngoại
+                return queryInterface.addConstraint('Chapter_Images', {
+                    fields: ['chapter_id'],
+                    type: 'foreign key',
+                    name: 'chapter_images_chapter_id_fk', // Tên của ràng buộc khóa ngoại
                     references: {
-                        table: "Chapters",
-                        field: "chapter_id",
+                        table: 'Chapters',
+                        field: 'chapter_id',
                     },
-                    onDelete: "CASCADE",
-                    onUpdate: "CASCADE",
+                    onDelete: 'CASCADE',
+                    onUpdate: 'CASCADE',
                 });
             });
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable("Chapter_Images");
+        await queryInterface.dropTable('Chapter_Images');
     },
 };

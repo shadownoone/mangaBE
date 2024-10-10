@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface
-            .createTable("Chapters", {
+            .createTable('Chapters', {
                 chapter_id: {
                     allowNull: false,
                     autoIncrement: true,
@@ -21,6 +21,10 @@ module.exports = {
                 title: {
                     type: Sequelize.STRING,
                 },
+                slug: {
+                    type: Sequelize.STRING,
+                    allowNull: true, // Có thể null nếu không có slug
+                },
                 createdAt: {
                     allowNull: false,
                     type: Sequelize.DATE,
@@ -33,22 +37,22 @@ module.exports = {
                 },
             })
             .then(() => {
-                return queryInterface.addConstraint("Chapters", {
-                    fields: ["manga_id"],
-                    type: "foreign key",
-                    name: "chapters_manga_id_fkey", // Tên ràng buộc khóa ngoại
+                return queryInterface.addConstraint('Chapters', {
+                    fields: ['manga_id'],
+                    type: 'foreign key',
+                    name: 'chapters_manga_id_fkey', // Tên ràng buộc khóa ngoại
                     references: {
-                        table: "Mangas", // Tên bảng mà `manga_id` tham chiếu tới
-                        field: "manga_id", // Tên trường trong bảng `Mangas`
+                        table: 'Mangas', // Tên bảng mà `manga_id` tham chiếu tới
+                        field: 'manga_id', // Tên trường trong bảng `Mangas`
                     },
-                    onUpdate: "CASCADE",
-                    onDelete: "CASCADE", // Xóa bản ghi trong bảng `Chapters` khi `Mangas` bị xóa
+                    onUpdate: 'CASCADE',
+                    onDelete: 'CASCADE', // Xóa bản ghi trong bảng `Chapters` khi `Mangas` bị xóa
                 });
             });
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.removeConstraint("Chapters", "chapters_manga_id_fkey");
-        await queryInterface.dropTable("Chapters");
+        await queryInterface.removeConstraint('Chapters', 'chapters_manga_id_fkey');
+        await queryInterface.dropTable('Chapters');
     },
 };

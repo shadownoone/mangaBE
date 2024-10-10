@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable("Mangas", {
+        await queryInterface.createTable('Mangas', {
             manga_id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -24,11 +24,19 @@ module.exports = {
                 defaultValue: 0,
             },
             status: {
-                type: Sequelize.TINYINT,
-                defaultValue: 0,
+                type: Sequelize.BOOLEAN,
+                defaultValue: false,
             },
             cover_image: {
                 type: Sequelize.STRING,
+            },
+            slug: {
+                type: Sequelize.STRING, // Thêm trường slug
+                allowNull: true, // Có thể null nếu không có slug
+            },
+            followers: {
+                type: Sequelize.INTEGER,
+                defaultValue: 0, // Thêm trường followers
             },
             createdAt: {
                 allowNull: false,
@@ -43,6 +51,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable("Mangas");
+        await queryInterface.dropTable('Mangas');
     },
 };
