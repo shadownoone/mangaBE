@@ -81,7 +81,6 @@ class CommentsController extends BaseController {
                 order: [['createdAt', 'DESC']],
                 raw: false,
             });
-            console.log('🚀 ~ CommentsController ~ getCommentByManga= ~ data:', data);
 
             if (data.code === -1) {
                 return res.status(500).json(data);
@@ -121,6 +120,24 @@ class CommentsController extends BaseController {
         } catch (error) {
             console.error('Error adding to comments:', error);
             return res.status(500).json({ message: 'Internal Server Error' });
+        }
+    };
+
+    //DELETE Comments
+    delete = async (req, res) => {
+        try {
+            const commentId = req.body.commentId;
+
+            await commentsService.delete({
+                where: { comment_id: commentId },
+            });
+
+            return res.status(200).json({
+                message: 'Đã xóa comment!',
+            });
+        } catch (error) {
+            console.error('Lỗi khi xóa comments:', error);
+            return res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
         }
     };
 }

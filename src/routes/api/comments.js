@@ -16,6 +16,6 @@ router.post('/create', authenticateUser, CommentsController.create);
 router.put('/:id', CommentsController.update);
 
 // [DELETE] /Comments/:id
-router.delete('/:id', CommentsController.delete);
+router.delete('/delete', authenticateUser, CommentsController.delete);
 
 module.exports = router;
