@@ -38,6 +38,7 @@ class UserController extends BaseController {
             }
 
             const historyData = readingHistory.map((entry) => ({
+                historyId: entry.history_id,
                 mangaTitle: entry.manga.title,
                 chapterTitle: entry.chapter.title,
                 chapterSlug: entry.chapter.slug,

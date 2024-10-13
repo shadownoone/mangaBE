@@ -66,6 +66,11 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 defaultValue: 0,
             },
+            is_vip: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+                allowNull: false,
+            },
         },
         {
             sequelize,

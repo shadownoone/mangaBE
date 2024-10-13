@@ -61,6 +61,15 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.TINYINT,
                 defaultValue: 0, // Giá trị mặc định là 0 cho người dùng thường
             },
+            is_vip: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+                allowNull: false,
+            },
+            vip_expiration: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             sequelize,

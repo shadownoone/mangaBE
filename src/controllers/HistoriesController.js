@@ -97,6 +97,29 @@ class HistoriesController extends BaseController {
             res.status(500).json({ message: 'Có lỗi xảy ra', error });
         }
     };
+
+    // DELETE
+    delete = async (req, res) => {
+        try {
+            const historyId = req.body.historyId;
+
+            // Tìm và xóa yêu thích bằng history_id
+            const deletedHistory = await historiesService.delete({
+                where: { history_id: historyId },
+            });
+
+            if (!deletedHistory) {
+                return res.status(404).json({ message: 'Không tìm thấy mục lịch sử.' });
+            }
+
+            return res.status(200).json({
+                message: 'Đã xóa khỏi danh sách lịch sử thành công!',
+            });
+        } catch (error) {
+            console.error('Lỗi khi xóa lịch sử:', error);
+            return res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        }
+    };
 }
 
 module.exports = new HistoriesController();

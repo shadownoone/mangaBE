@@ -1,6 +1,7 @@
 const favoritesService = require('../services/favoritesService');
 const db = require('~/models');
 const BaseController = require('./BaseController');
+const mangaService = require('~/services/mangaService');
 
 class FavoritesController extends BaseController {
     constructor() {
@@ -44,15 +45,14 @@ class FavoritesController extends BaseController {
     addFavorite = async (req, res) => {
         try {
             const userId = req.user.user_id;
+
             const mangaId = req.body.manga_id;
-            console.log('userId:', userId, 'mangaId:', mangaId);
 
             // Kiểm tra xem truyện đã tồn tại trong danh sách yêu thích chưa
             const existingFavorite = await favoritesService.find({
                 findOne: true,
                 where: { user_id: userId, manga_id: mangaId },
             });
-            console.log('Existing favorite:', existingFavorite);
 
             // Sửa điều kiện kiểm tra để đảm bảo rằng chỉ báo lỗi nếu có dữ liệu
             if (existingFavorite.code === 0 && existingFavorite.data.length > 0) {
@@ -64,6 +64,8 @@ class FavoritesController extends BaseController {
                 user_id: userId,
                 manga_id: mangaId,
             });
+
+            await mangaService.incrementFollowers(mangaId);
 
             return res.status(201).json({
                 message: 'Thêm truyện vào danh sách yêu thích thành công!',
@@ -79,7 +81,23 @@ class FavoritesController extends BaseController {
     removeFavorite = async (req, res) => {
         try {
             const favoriteId = req.body.favorite_id;
-            console.log(favoriteId);
+
+            // Tìm mục yêu thích để lấy mangaId
+            const existingFavorite = await favoritesService.find({
+                findOne: true,
+                where: { favorite_id: favoriteId },
+            });
+
+            // Log ra dữ liệu của existingFavorite
+            console.log('Existing Favorite:', existingFavorite);
+
+            // Kiểm tra xem có tìm thấy mục yêu thích không
+            if (!existingFavorite || existingFavorite.data.length === 0) {
+                return res.status(404).json({ message: 'Không tìm thấy mục yêu thích.' });
+            }
+
+            // Lấy mangaId từ mục yêu thích
+            const mangaId = existingFavorite.data.manga_id;
 
             // Tìm và xóa yêu thích bằng favorite_id
             const deletedFavorite = await favoritesService.delete({
@@ -89,6 +107,9 @@ class FavoritesController extends BaseController {
             if (!deletedFavorite) {
                 return res.status(404).json({ message: 'Không tìm thấy mục yêu thích.' });
             }
+
+            // Giảm người theo dõi
+            await mangaService.decrementFollowers(mangaId);
 
             return res.status(200).json({
                 message: 'Đã xóa khỏi danh sách yêu thích thành công!',

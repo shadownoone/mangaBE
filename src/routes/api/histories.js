@@ -16,6 +16,6 @@ router.post('/update', authenticateUser, HistoriesController.update);
 // router.put("/:id", HistoriesController.update);
 
 // [DELETE] /History/:id
-router.delete('/:id', HistoriesController.delete);
+router.delete('/delete', authenticateUser, HistoriesController.delete);
 
 module.exports = router;
