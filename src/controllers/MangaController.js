@@ -205,8 +205,6 @@ class MangaController extends BaseController {
         const page = req.query.page || 1;
         const pageSize = req.query.pageSize || 20;
 
-        console.log(page);
-
         try {
             // Lấy danh sách top manga, sắp xếp theo lượt xem (views) giảm dần
             const data = await mangaService.find({
@@ -391,6 +389,47 @@ class MangaController extends BaseController {
             return res.status(200).json({
                 code: 0,
                 data: newMangas,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                code: -1,
+                message: error.message,
+            });
+        }
+    };
+
+    //getVipManga
+    ggetVipManga = async (req, res) => {
+        const limit = req.query.limit || 20; // Giới hạn số lượng manga trả về
+        try {
+            const vipMangas = await db.Manga.findAll({
+                where: {
+                    is_vip: true, // Chỉ lấy những manga có is_vip là true
+                },
+                limit: limit, // Giới hạn số lượng manga trả về
+                order: [['createdAt', 'DESC']], // Sắp xếp theo ngày tạo mới nhất
+                include: [
+                    {
+                        model: db.Chapter,
+                        as: 'chapters',
+                        limit: 1, // Lấy chương mới nhất của từng manga
+                        order: [['chapter_number', 'DESC']],
+                    },
+                    {
+                        model: db.Genre,
+                        as: 'genres',
+                        attributes: ['name'],
+                        through: {
+                            attributes: [], // Loại bỏ các thuộc tính dư thừa từ bảng nối
+                        },
+                    },
+                ],
+                raw: false,
+            });
+
+            return res.status(200).json({
+                code: 0,
+                data: vipMangas,
             });
         } catch (error) {
             return res.status(500).json({

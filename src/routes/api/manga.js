@@ -16,8 +16,8 @@ router.get('/new-manga', MangaController.getNewManga);
 //Get TopMangaByTime
 router.get('/top-time', MangaController.getTopMangasByTime);
 
-// [GET] /id
-// router.get('/:id', MangaController.getMangaById);
+//Get VipManga
+router.get('/vip-manga', MangaController.ggetVipManga);
 
 // [GET] /slug/
 router.get('/:slug', MangaController.getMangaBySlug);

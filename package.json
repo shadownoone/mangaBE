@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "@babel/runtime": "^7.22.10",
+        "@payos/node": "^1.0.10",
         "app-root-path": "^3.1.0",
         "bcryptjs": "^2.4.3",
         "cloudinary": "^2.5.1",

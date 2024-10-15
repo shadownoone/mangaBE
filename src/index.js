@@ -4,6 +4,9 @@ require('dotenv').config();
 const passport = require('passport');
 const authRoute = require('./routes/api/auth');
 const cookieSession = require('cookie-session');
+const PayOS = require('@payos/node');
+
+const payos = new PayOS(process.env.PAYOS_CLIENT_ID, process.env.PAYOS_SECRET_ID, process.env.PAYOS_SECRET_KEY);
 
 const express = require('express');
 const path = require('path');
@@ -22,6 +25,9 @@ const routes = require('./routes');
 const { sequelize, connect } = require('./config/connection');
 const helpers = require('./helpers/handlebars');
 const socketService = require('./services/socketService');
+const generateOrderCode = () => {
+    return Math.floor(Math.random() * 100000); // Số ngẫu nhiên nhỏ hơn 1 tỷ
+};
 
 const app = express();
 const server = http.createServer(app);
@@ -30,9 +36,29 @@ const io = new Server(server, {
         origin: '*',
     },
 });
-
 const port = process.env.PORT || 5000;
 connect();
+app.use(
+    cors({
+        origin: ['http://localhost:3000', 'http://localhost:5174', 'https://pay.payos.vn'],
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+    }),
+);
+
+const YOUR_DOMAIN = 'http://localhost:5000';
+app.post('/api/v1/payment-link', async (req, res) => {
+    const order = {
+        amount: 10000,
+        description: 'Thanh toan Vip',
+        orderCode: generateOrderCode(),
+        returnUrl: `${YOUR_DOMAIN}/login`,
+        cancelUrl: `${YOUR_DOMAIN}/logout`,
+    };
+    const paymentLink = await payos.createPaymentLink(order);
+    res.json({ checkoutUrl: paymentLink.checkoutUrl });
+});
 
 app.engine(
     'hbs',
@@ -46,7 +72,6 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(morgan('dev'));
 app.use(cookieParser());
-app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:5174'], credentials: true }));
 
 app.use(
     session({
