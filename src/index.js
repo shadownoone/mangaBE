@@ -1,10 +1,14 @@
 require('module-alias/register');
 require('dotenv').config();
 
+const db = require('~/models');
 const passport = require('passport');
 const authRoute = require('./routes/api/auth');
 const cookieSession = require('cookie-session');
 const PayOS = require('@payos/node');
+const { User } = require('~/models');
+const { Op } = require('sequelize');
+const moment = require('moment');
 
 const payos = new PayOS(process.env.PAYOS_CLIENT_ID, process.env.PAYOS_SECRET_ID, process.env.PAYOS_SECRET_KEY);
 
@@ -25,6 +29,8 @@ const routes = require('./routes');
 const { sequelize, connect } = require('./config/connection');
 const helpers = require('./helpers/handlebars');
 const socketService = require('./services/socketService');
+const { authenticateUser } = require('./middlewares/authMiddleware');
+
 const generateOrderCode = () => {
     return Math.floor(Math.random() * 100000); // Số ngẫu nhiên nhỏ hơn 1 tỷ
 };
@@ -46,19 +52,6 @@ app.use(
         allowedHeaders: ['Content-Type', 'Authorization'],
     }),
 );
-
-const YOUR_DOMAIN = 'http://localhost:5000';
-app.post('/api/v1/payment-link', async (req, res) => {
-    const order = {
-        amount: 10000,
-        description: 'Thanh toan Vip',
-        orderCode: generateOrderCode(),
-        returnUrl: `${YOUR_DOMAIN}/login`,
-        cancelUrl: `${YOUR_DOMAIN}/logout`,
-    };
-    const paymentLink = await payos.createPaymentLink(order);
-    res.json({ checkoutUrl: paymentLink.checkoutUrl });
-});
 
 app.engine(
     'hbs',
@@ -104,6 +97,89 @@ app.use((req, res, next) => {
 });
 
 routes(app);
+
+const YOUR_DOMAIN = 'http://localhost:3000';
+app.post('/api/v1/payment-link', authenticateUser, async (req, res) => {
+    try {
+        console.log('🚀 ~ req.user:', req.user); // Kiểm tra log user
+
+        const orderCode = generateOrderCode();
+
+        const order = {
+            amount: 10000,
+            description: 'Thanh toán VIP',
+            orderCode: orderCode,
+            returnUrl: `${YOUR_DOMAIN}`,
+            cancelUrl: `${YOUR_DOMAIN}/cancel`,
+        };
+
+        const paymentLink = await payos.createPaymentLink(order);
+
+        // Sử dụng req.user.user_id thay vì req.user.id
+        await db.Payments.create({
+            user_id: req.user.user_id,
+            amount: order.amount,
+            status: 'success',
+            order_code: orderCode,
+        });
+
+        res.json({ checkoutUrl: paymentLink.checkoutUrl });
+    } catch (error) {
+        console.error('Error creating payment link:', error);
+        res.status(500).json({ message: 'Error creating payment link' });
+    }
+});
+
+app.post('/receive-hook', async (req, res) => {
+    try {
+        console.log('Webhook received:', req.body); // Log the webhook content to verify structure
+
+        const { orderCode } = req.body.data; // Ensure that data.orderCode exists
+
+        if (!orderCode) {
+            return res.status(400).json({ message: 'Order code is missing' });
+        }
+
+        // Verify db.Payments and db.Users are defined
+        console.log('db.Payments:', db.Payments);
+        console.log('db.Users:', db.User);
+
+        const payment = await db.Payments.findOne({
+            where: { order_code: orderCode },
+        });
+
+        if (!payment) {
+            return res.status(404).json({ message: 'Payment not found' });
+        }
+
+        // Update the payment status
+        await payment.update({ status: 'success' });
+
+        // Find the user based on the user_id in the payment record
+        const user = await db.User.findOne({
+            where: { user_id: payment.user_id },
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Update user's VIP status and set VIP expiration to 30 days from now
+        const vipExpiration = moment().add(30, 'days').toDate();
+
+        await user.update({
+            is_vip: 1,
+            vip_expiration: vipExpiration,
+        });
+
+        console.log(`User ${user.username} is now VIP until ${vipExpiration}`);
+
+        res.status(200).json({ message: 'Payment recorded and user VIP status updated successfully' });
+    } catch (error) {
+        console.error('Error handling webhook:', error);
+        res.status(500).json({ message: 'Error handling webhook' });
+    }
+});
 
 io.on('connection', socketService.connection);
 
