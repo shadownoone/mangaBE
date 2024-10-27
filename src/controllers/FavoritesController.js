@@ -67,7 +67,7 @@ class FavoritesController extends BaseController {
 
             await mangaService.incrementFollowers(mangaId);
 
-            return res.status(201).json({
+            return res.status(200).json({
                 message: 'Thêm truyện vào danh sách yêu thích thành công!',
                 favorite: newFavorite,
             });

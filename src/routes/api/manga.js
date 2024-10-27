@@ -2,6 +2,12 @@ const router = require('express').Router();
 
 const MangaController = require('~/controllers/MangaController');
 
+// [POST] /Manga
+router.post('/create', MangaController.create);
+
+// [PUT] /Manga/:id
+router.put('/:id', MangaController.update);
+
 // [GET] /Manga
 router.get('/all', MangaController.get);
 
@@ -17,19 +23,13 @@ router.get('/new-manga', MangaController.getNewManga);
 router.get('/top-time', MangaController.getTopMangasByTime);
 
 //Get VipManga
-router.get('/vip-manga', MangaController.ggetVipManga);
+router.get('/vip-manga', MangaController.getVipManga);
 
 // [GET] /slug/
 router.get('/:slug', MangaController.getMangaBySlug);
 
 // [GET] /slug/:slug_chapter
 router.get('/:slug/:slug_chapter', MangaController.getMangaBySlugAndChapter);
-
-// [POST] /Manga
-router.post('/', MangaController.create);
-
-// [PUT] /Manga/:id
-router.put('/:id', MangaController.update);
 
 // [DELETE] /Manga/:id
 router.delete('/:id', MangaController.delete);

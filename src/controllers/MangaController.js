@@ -2,6 +2,7 @@ const mangaService = require('../services/mangaService');
 const db = require('~/models');
 const { Op } = require('sequelize');
 const BaseController = require('./BaseController');
+const slugify = require('slugify');
 
 const ratingService = require('../services/ratingsService');
 
@@ -10,10 +11,102 @@ class MangaController extends BaseController {
         super('manga');
     }
 
+    //POST Manga
+    create = async (req, res) => {
+        try {
+            // Lấy dữ liệu từ request body
+            const { title, description, author, cover_image, status, is_vip } = req.body;
+
+            // Kiểm tra xem title đã được cung cấp chưa
+            if (!title) {
+                return res.status(400).json({ message: 'Title is required' });
+            }
+
+            // Tạo slug từ title
+            const slug = slugify(title, {
+                lower: true, // Chuyển sang chữ thường
+                strict: true, // Loại bỏ ký tự đặc biệt
+            });
+
+            // Kiểm tra xem slug đã tồn tại hay chưa
+            const existingManga = await db.Manga.findOne({ where: { slug } });
+            if (existingManga) {
+                return res.status(400).json({ message: 'Manga with this title already exists' });
+            }
+
+            // Tạo bản ghi Manga mới
+            const newManga = await db.Manga.create({
+                title,
+                description,
+                author: author || 'Unknown', // Nếu không có author thì set mặc định là Unknown
+                cover_image: cover_image || '', // Nếu không có ảnh bìa thì để trống
+                status: status || 0, // Mặc định là đang cập nhật (status = 0)
+                is_vip: is_vip || false, // Mặc định là không VIP
+                slug,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                views: 0, // Lượt xem ban đầu là 0
+                followers: 0, // Người theo dõi ban đầu là 0
+            });
+
+            // Trả về kết quả
+            return res.status(201).json({
+                message: 'Manga created successfully',
+                data: newManga,
+            });
+        } catch (error) {
+            console.error('Error creating manga:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    };
+
+    //PUT Manga
+    update = async (req, res) => {
+        const { id } = req.params; // Lấy id từ params
+        const { title, description, author, cover_image, status, is_vip } = req.body; // Lấy thông tin cập nhật từ body
+
+        try {
+            // Kiểm tra nếu Manga có tồn tại hay không
+            const manga = await db.Manga.findByPk(id);
+            if (!manga) {
+                return res.status(404).json({ message: 'Manga not found' });
+            }
+
+            // Nếu có cập nhật title thì tạo slug mới từ title
+            let slug = manga.slug; // Giữ nguyên slug nếu không cập nhật title
+            if (title) {
+                slug = slugify(title, {
+                    lower: true, // Chuyển sang chữ thường
+                    strict: true, // Loại bỏ ký tự đặc biệt
+                });
+            }
+
+            // Cập nhật thông tin Manga
+            const updatedManga = await manga.update({
+                title: title || manga.title, // Giữ nguyên title cũ nếu không có cập nhật
+                description: description || manga.description,
+                author: author || manga.author,
+                cover_image: cover_image || manga.cover_image,
+                status: status || manga.status,
+                is_vip: is_vip !== undefined ? is_vip : manga.is_vip, // Nếu is_vip được gửi lên thì cập nhật
+                slug,
+                updatedAt: new Date(),
+            });
+
+            return res.status(200).json({
+                message: 'Manga updated successfully',
+                data: updatedManga,
+            });
+        } catch (error) {
+            console.error('Error updating manga:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    };
+
     // GET API
     get = async (req, res) => {
         const page = req.query.page || 1;
-        const pageSize = req.query.pageSize || 20;
+        const pageSize = req.query.pageSize || 50;
         try {
             const data = await mangaService.find({
                 page: page,
@@ -399,7 +492,7 @@ class MangaController extends BaseController {
     };
 
     //getVipManga
-    ggetVipManga = async (req, res) => {
+    getVipManga = async (req, res) => {
         const limit = req.query.limit || 20; // Giới hạn số lượng manga trả về
         try {
             const vipMangas = await db.Manga.findAll({
