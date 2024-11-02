@@ -3,6 +3,7 @@ const db = require('~/models');
 const { Op } = require('sequelize');
 const BaseController = require('./BaseController');
 const slugify = require('slugify');
+const { removeVietnameseTones } = require('../utils/slug');
 
 const ratingService = require('../services/ratingsService');
 
@@ -61,9 +62,10 @@ class MangaController extends BaseController {
     };
 
     //PUT Manga
+    //PUT Manga
     update = async (req, res) => {
         const { id } = req.params; // Lấy id từ params
-        const { title, description, author, cover_image, status, is_vip } = req.body; // Lấy thông tin cập nhật từ body
+        const { title, description, author, cover_image, status, is_vip, genres } = req.body; // Lấy thông tin cập nhật từ body
 
         try {
             // Kiểm tra nếu Manga có tồn tại hay không
@@ -73,25 +75,44 @@ class MangaController extends BaseController {
             }
 
             // Nếu có cập nhật title thì tạo slug mới từ title
-            let slug = manga.slug; // Giữ nguyên slug nếu không cập nhật title
-            if (title) {
-                slug = slugify(title, {
+            let newSlug = manga.slug; // Giữ nguyên slug nếu không cập nhật title
+            if (title && title !== manga.title) {
+                const normalizedTitle = removeVietnameseTones(title); // Chuẩn hóa title bằng cách loại bỏ dấu
+                newSlug = slugify(normalizedTitle, {
                     lower: true, // Chuyển sang chữ thường
                     strict: true, // Loại bỏ ký tự đặc biệt
                 });
+                console.log('New slug:', newSlug);
             }
 
             // Cập nhật thông tin Manga
             const updatedManga = await manga.update({
-                title: title || manga.title, // Giữ nguyên title cũ nếu không có cập nhật
+                title: title || manga.title,
                 description: description || manga.description,
                 author: author || manga.author,
                 cover_image: cover_image || manga.cover_image,
                 status: status || manga.status,
-                is_vip: is_vip !== undefined ? is_vip : manga.is_vip, // Nếu is_vip được gửi lên thì cập nhật
-                slug,
+                is_vip: is_vip !== undefined ? is_vip : manga.is_vip,
+                slug: newSlug,
                 updatedAt: new Date(),
             });
+
+            // Cập nhật các thể loại của Manga
+            if (genres && Array.isArray(genres)) {
+                // Xóa các thể loại hiện tại của manga từ bảng manga_genres
+                await db.Manga_Genres.destroy({ where: { manga_id: id } });
+
+                // Thêm các thể loại mới vào bảng manga_genres
+                for (const genreName of genres) {
+                    const genre = await db.Genre.findOne({ where: { name: genreName } });
+                    if (genre) {
+                        await db.Manga_Genres.create({
+                            manga_id: id,
+                            genre_id: genre.genre_id,
+                        });
+                    }
+                }
+            }
 
             return res.status(200).json({
                 message: 'Manga updated successfully',

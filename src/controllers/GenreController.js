@@ -7,10 +7,29 @@ class GenreController extends BaseController {
         super('genre');
     }
 
+    createGenre = async (req, res) => {
+        const genreName = req.body.genreName; // Sử dụng req.body thay vì req.params nếu truyền qua Body
+
+        try {
+            // Kiểm tra xem genre đã tồn tại chưa
+            let genre = await db.Genre.findOne({ where: { name: genreName } });
+            if (!genre) {
+                // Nếu chưa tồn tại, tạo genre mới
+                genre = await db.Genre.create({ name: genreName });
+            }
+
+            // Trả về genre đã tồn tại hoặc vừa tạo
+            res.status(201).json({ message: 'Genre checked/added', data: genre });
+        } catch (error) {
+            console.error('Error details:', error); // Ghi chi tiết lỗi vào console
+            res.status(500).json({ message: 'Error checking/adding genre', error: error.message });
+        }
+    };
+
     // GET API
     get = async (req, res) => {
         const page = req.query.page || 1;
-        const pageSize = req.query.pageSize || 10;
+        const pageSize = req.query.pageSize || 20;
         try {
             const data = await genreService.find({
                 page: page,
