@@ -26,6 +26,48 @@ class GenreController extends BaseController {
         }
     };
 
+    update = async (req, res) => {
+        const { id } = req.params; // Lấy id từ params
+        const { genreName } = req.body; // Lấy tên thể loại mới từ body
+
+        try {
+            // Kiểm tra xem genre có tồn tại không
+            let genre = await db.Genre.findByPk(id);
+            if (!genre) {
+                return res.status(404).json({ message: 'Genre not found' });
+            }
+
+            // Cập nhật tên thể loại
+            await genre.update({ name: genreName });
+
+            // Trả về genre đã được cập nhật
+            res.status(200).json({ message: 'Genre updated successfully', data: genre });
+        } catch (error) {
+            console.error('Error updating genre:', error); // Ghi chi tiết lỗi vào console
+            res.status(500).json({ message: 'Error updating genre', error: error.message });
+        }
+    };
+
+    delete = async (req, res) => {
+        const { id } = req.params; // Lấy id từ params
+
+        try {
+            // Kiểm tra nếu genre có tồn tại hay không
+            const genre = await db.Genre.findByPk(id);
+            if (!genre) {
+                return res.status(404).json({ message: 'Genre not found' });
+            }
+
+            // Xóa genre
+            await genre.destroy();
+
+            return res.status(200).json({ message: 'Genre deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting genre:', error);
+            return res.status(500).json({ message: 'Internal server error', error: error.message });
+        }
+    };
+
     // GET API
     get = async (req, res) => {
         const page = req.query.page || 1;

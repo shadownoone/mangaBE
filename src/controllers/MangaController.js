@@ -85,14 +85,18 @@ class MangaController extends BaseController {
                 console.log('New slug:', newSlug);
             }
 
+            // Kiểm tra và chuyển đổi status và is_vip về số (integer)
+            const updatedStatus = status !== undefined ? parseInt(status, 10) : manga.status;
+            const updatedIsVip = is_vip !== undefined ? (is_vip ? 1 : 0) : manga.is_vip;
+
             // Cập nhật thông tin Manga
             const updatedManga = await manga.update({
                 title: title || manga.title,
                 description: description || manga.description,
                 author: author || manga.author,
                 cover_image: cover_image || manga.cover_image,
-                status: status || manga.status,
-                is_vip: is_vip !== undefined ? is_vip : manga.is_vip,
+                status: updatedStatus,
+                is_vip: updatedIsVip,
                 slug: newSlug,
                 updatedAt: new Date(),
             });
