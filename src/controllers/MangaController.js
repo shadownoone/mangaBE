@@ -13,10 +13,11 @@ class MangaController extends BaseController {
     }
 
     //POST Manga
+    // POST Manga
     create = async (req, res) => {
         try {
             // Lấy dữ liệu từ request body
-            const { title, description, author, cover_image, status, is_vip } = req.body;
+            const { title, description, author, cover_image, status, is_vip, genres } = req.body;
 
             // Kiểm tra xem title đã được cung cấp chưa
             if (!title) {
@@ -49,6 +50,25 @@ class MangaController extends BaseController {
                 views: 0, // Lượt xem ban đầu là 0
                 followers: 0, // Người theo dõi ban đầu là 0
             });
+
+            // Xử lý genres nếu có trong request
+            if (genres && Array.isArray(genres)) {
+                for (const genreName of genres) {
+                    // Tìm genre trong bảng Genre
+                    let genre = await db.Genre.findOne({ where: { name: genreName } });
+
+                    // Nếu genre không tồn tại, tạo mới
+                    if (!genre) {
+                        genre = await db.Genre.create({ name: genreName });
+                    }
+
+                    // Thêm thể loại vào bảng Manga_Genres
+                    await db.Manga_Genres.create({
+                        manga_id: newManga.manga_id,
+                        genre_id: genre.genre_id,
+                    });
+                }
+            }
 
             // Trả về kết quả
             return res.status(201).json({
