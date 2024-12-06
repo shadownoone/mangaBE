@@ -10,7 +10,7 @@ class ChapterController extends BaseController {
 
     get = async (req, res) => {
         const page = req.query.page || 1;
-        const pageSize = req.query.pageSize || 50;
+        const pageSize = req.query.pageSize || 50000;
         try {
             const data = await chapterService.find({
                 page: page,
