@@ -9,6 +9,9 @@ const { authenticateUser } = require('~/middlewares/authMiddleware');
 // [GET] /users
 router.get('/all', userController.get);
 
+// Get TotalUser
+router.get('/total', userController.totalUsers);
+
 //
 router.get('/last-read', authenticateUser, userController.getLastReadMangaAndChapter);
 

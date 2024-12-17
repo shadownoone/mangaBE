@@ -576,6 +576,31 @@ class MangaController extends BaseController {
             });
         }
     };
+
+    //ThongKe
+    getStatistical = async (req, res) => {
+        try {
+            // Truy vấn tổng số lượt xem từ cột `views` trong bảng `Manga`
+            const totalViews = await db.Manga.sum('views');
+            const totalMangas = await db.Manga.count('manga_id');
+
+            // Trả về kết quả dưới dạng JSON
+            return res.status(200).json({
+                code: 0,
+                message: 'Success',
+                data: {
+                    totalViews, // Tổng lượt xem
+                    totalMangas,
+                },
+            });
+        } catch (error) {
+            // Xử lý lỗi nếu có
+            return res.status(500).json({
+                code: -1,
+                message: error.message,
+            });
+        }
+    };
 }
 
 module.exports = new MangaController();

@@ -1,5 +1,6 @@
 const userService = require('../services/userService');
 const BaseController = require('./BaseController');
+const db = require('~/models');
 
 class UserController extends BaseController {
     constructor() {
@@ -144,6 +145,25 @@ class UserController extends BaseController {
         } catch (error) {
             console.error('Error updating user:', error);
             res.status(500).json({ message: 'Failed to update user.' });
+        }
+    };
+
+    //getTotalUser
+    totalUsers = async (req, res) => {
+        try {
+            const totalUsers = await db.User.count('user_id');
+            return res.status(200).json({
+                code: 0,
+                message: 'Success',
+                data: {
+                    totalUsers,
+                },
+            });
+        } catch (error) {
+            return res.status(500).json({
+                code: -1,
+                message: error.message,
+            });
         }
     };
 }

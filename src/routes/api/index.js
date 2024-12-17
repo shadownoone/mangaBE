@@ -24,8 +24,12 @@ const registerRouter = require('./register');
 
 const userRouter = require('./user');
 
+const paymentRouter = require('./payments');
+
 const registerController = require('~/controllers/RegisterController');
 const { authenticateUser } = require('~/middlewares/authMiddleware');
+
+router.use('/payments', paymentRouter);
 
 router.use('/mangas', mangaRouter);
 

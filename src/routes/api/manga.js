@@ -11,6 +11,9 @@ router.put('/:id', MangaController.update);
 // [GET] /Manga
 router.get('/all', MangaController.get);
 
+//Get Statistical
+router.get('/statistical', MangaController.getStatistical);
+
 router.get('/top', MangaController.getTopMangas);
 
 // Route để tìm kiếm truyện theo từ khóa
