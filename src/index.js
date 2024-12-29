@@ -132,17 +132,13 @@ app.post('/api/v1/payment-link', authenticateUser, async (req, res) => {
 
 app.post('/receive-hook', async (req, res) => {
     try {
-        console.log('Webhook received:', req.body); // Log the webhook content to verify structure
+        console.log('Webhook received:', req.body);
 
-        const { orderCode } = req.body.data; // Ensure that data.orderCode exists
+        const { orderCode } = req.body.data;
 
         if (!orderCode) {
             return res.status(400).json({ message: 'Order code is missing' });
         }
-
-        // Verify db.Payments and db.Users are defined
-        console.log('db.Payments:', db.Payments);
-        console.log('db.Users:', db.User);
 
         const payment = await db.Payments.findOne({
             where: { order_code: orderCode },
@@ -152,10 +148,8 @@ app.post('/receive-hook', async (req, res) => {
             return res.status(404).json({ message: 'Payment not found' });
         }
 
-        // Update the payment status
         await payment.update({ status: 'success' });
 
-        // Find the user based on the user_id in the payment record
         const user = await db.User.findOne({
             where: { user_id: payment.user_id },
         });
@@ -164,7 +158,6 @@ app.post('/receive-hook', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Update user's VIP status and set VIP expiration to 30 days from now
         const vipExpiration = moment().add(30, 'days').toDate();
 
         await user.update({
@@ -174,10 +167,13 @@ app.post('/receive-hook', async (req, res) => {
 
         console.log(`User ${user.username} is now VIP until ${vipExpiration}`);
 
-        res.status(200).json({ message: 'Payment recorded and user VIP status updated successfully' });
+        return res.status(200).json({ message: 'Payment recorded and user VIP status updated successfully' });
     } catch (error) {
         console.error('Error handling webhook:', error);
-        res.status(500).json({ message: 'Error handling webhook' });
+
+        if (!res.headersSent) {
+            return res.status(500).json({ message: 'Error handling webhook' });
+        }
     }
 });
 

@@ -601,6 +601,71 @@ class MangaController extends BaseController {
             });
         }
     };
+
+    //DELETE Manga
+    delete = async (req, res) => {
+        try {
+            const manga_id = req.params.manga_id;
+            console.log(manga_id);
+
+            await mangaService.delete({
+                where: { manga_id: manga_id },
+            });
+
+            return res.status(200).json({
+                message: 'Đã xóa manga!',
+            });
+        } catch (error) {
+            console.error('Lỗi khi xóa manga:', error);
+            return res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        }
+    };
+
+    getVipUsersWithPayments = async (req, res) => {
+        const limit = req.query.limit || 20;
+
+        try {
+            const vipUsers = await db.User.findAll({
+                where: {
+                    is_vip: true, // Chỉ lấy người dùng VIP
+                },
+                include: [
+                    {
+                        model: db.Payments, // Kết hợp bảng Payments
+                        as: 'payments', // Alias phải khớp với alias trong model
+                        attributes: ['amount'], // Chỉ lấy số tiền
+                    },
+                ],
+            });
+
+            // Tính tổng số tiền và sắp xếp theo số tiền giảm dần
+            const results = vipUsers
+                .map((user) => {
+                    const totalAmount = user.payments.reduce((sum, payment) => sum + parseFloat(payment.amount), 0);
+                    return {
+                        user_id: user.user_id,
+                        username: user.username,
+                        email: user.email,
+                        avatar: user.avatar,
+                        vip_expiration: user.vip_expiration,
+                        total_amount: totalAmount,
+                    };
+                })
+                .sort((a, b) => b.total_amount - a.total_amount) // Sắp xếp giảm dần theo tổng tiền
+                .slice(0, limit); // Lấy giới hạn số lượng người dùng
+
+            return res.status(200).json({
+                code: 0,
+                data: results,
+            });
+        } catch (error) {
+            console.error('Error fetching VIP users:', error);
+            return res.status(500).json({
+                code: -1,
+                message: 'Lỗi khi lấy danh sách người dùng VIP',
+            });
+        }
+    };
 }
 
 module.exports = new MangaController();

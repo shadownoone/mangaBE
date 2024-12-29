@@ -30,6 +30,11 @@ module.exports = (sequelize, DataTypes) => {
                 otherKey: 'manga_id',
                 as: 'favoriteMangas',
             });
+
+            User.hasMany(models.Payments, {
+                foreignKey: 'user_id',
+                as: 'payments',
+            });
         }
     }
     User.init(

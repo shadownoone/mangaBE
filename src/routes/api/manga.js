@@ -22,6 +22,8 @@ router.get('/search', MangaController.searchManga);
 //Get NewManga
 router.get('/new-manga', MangaController.getNewManga);
 
+router.get('/vip', MangaController.getVipUsersWithPayments);
+
 //Get TopMangaByTime
 router.get('/top-time', MangaController.getTopMangasByTime);
 
@@ -35,6 +37,6 @@ router.get('/:slug', MangaController.getMangaBySlug);
 router.get('/:slug/:slug_chapter', MangaController.getMangaBySlugAndChapter);
 
 // [DELETE] /Manga/:id
-router.delete('/:id', MangaController.delete);
+router.delete('/:manga_id', MangaController.delete);
 
 module.exports = router;
